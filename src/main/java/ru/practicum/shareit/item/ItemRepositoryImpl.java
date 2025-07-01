@@ -18,7 +18,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item create(Item item) {
-        item.setId(counter.incrementAndGet());
+        item.setId(getNextId());
         items.put(item.getId(), item);
         log.info("Created new item: {}", item.getId(), item.getName());
         return item;
@@ -78,5 +78,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     public void deleteItem(Long itemId) {
         log.info("Удален предмет с ID: {}", itemId);
         items.remove(itemId);
+    }
+
+    private long getNextId() {
+        long maxId = items.keySet().stream().mapToLong(Long::longValue).max().orElse(0L);
+        return counter.updateAndGet(current -> Math.max(current, maxId + 1));
     }
 }

@@ -7,17 +7,20 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 @Slf4j
 public class UserRepositoryImpl implements UserRepository {
 
     private final Map<Long, User> users = new HashMap<>();
+    private final AtomicLong counter = new AtomicLong(1);
 
     @Override
     public User create(User user) {
         log.info("Creating user: {}", user.getEmail());
         validateEmail(user);
+        user.setId(getNextId());
         users.put(user.getId(), user);
         log.info("Created user: e mail {} and id {}", user.getEmail(), user.getId());
         return user;
@@ -69,5 +72,10 @@ public class UserRepositoryImpl implements UserRepository {
             log.error("Email {} уже используется", user.getEmail());
             throw new DuplicatedDataException("Этот email уже используется");
         }
+    }
+
+    private long getNextId() {
+        long maxId = users.keySet().stream().mapToLong(Long::longValue).max().orElse(0L);
+        return counter.updateAndGet(current -> Math.max(current, maxId + 1));
     }
 }
