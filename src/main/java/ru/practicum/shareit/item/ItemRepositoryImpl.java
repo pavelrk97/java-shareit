@@ -6,19 +6,21 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
 public class ItemRepositoryImpl implements ItemRepository {
 
-    private final Map<Long, Item> items = new HashMap<>();
+    private final AtomicLong counter = new AtomicLong(1);
+    private final Map<Long, Item> items = new HashMap<Long, Item>();
 
     @Override
     public Item create(Item item) {
-        item.setId(getNextId());
+        item.setId(counter.incrementAndGet());
         items.put(item.getId(), item);
-        log.info("Создан предмет с ID: {}", item.getId());
+        log.info("Created new item: {}", item.getId(), item.getName());
         return item;
     }
 
@@ -26,30 +28,30 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item update(Long itemId, Item updateItem, Long userId) {
         Item oldItem = items.get(itemId);
 
-        if (oldItem == null) {
-            throw new NotFoundException("Предмет с ID " + itemId + " не найден.");
-        }
+        Optional.ofNullable(oldItem).orElseThrow(() ->
+                        new NotFoundException("Item not found id = " + itemId));
 
         if (!Objects.equals(oldItem.getOwner(), userId)) {
-            throw new NotFoundException("У вас нет прав на обновление этого предмета.");
+            throw new NotFoundException("You are not owner of this item");
         }
 
-        Optional.ofNullable(updateItem.getName()).ifPresent(oldItem::setName);
+        Optional.ofNullable(updateItem.getName()).filter(s -> !s.isBlank())
+                .ifPresent(oldItem::setName);  // проверка на ввод пробела и налл
         Optional.ofNullable(updateItem.getDescription()).ifPresent(oldItem::setDescription);
         Optional.ofNullable(updateItem.getAvailable()).ifPresent(oldItem::setAvailable);
 
         items.put(itemId, oldItem);
-        log.info("Обновлен предмет с ID: {}", itemId);
+        log.info("Updated new item: id={}, name={}, description={}, available={}",
+                itemId, oldItem.getName(), oldItem.getDescription(), oldItem.getAvailable());
         return oldItem;
     }
 
     @Override
     public Item getItemById(Long itemId) {
-        Item item = items.get(itemId);
-        if (item == null) {
-            throw new NotFoundException("Предмет с ID " + itemId + " не найден.");
-        }
-        log.info("Получен предмет с ID: {}", itemId);
+        Item item = Optional.ofNullable(items.get(itemId))
+                .orElseThrow(() -> new NotFoundException("Item not found id = " + itemId));
+        log.info("Received item: id={}, name={}, description={}, available={}",
+                item.getId(), item.getName(), item.getDescription(), item.getAvailable());
         return item;
     }
 
@@ -76,14 +78,5 @@ public class ItemRepositoryImpl implements ItemRepository {
     public void deleteItem(Long itemId) {
         log.info("Удален предмет с ID: {}", itemId);
         items.remove(itemId);
-    }
-
-    private long getNextId() {
-        long currentMaxId = items.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
     }
 }

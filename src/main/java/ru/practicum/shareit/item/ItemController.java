@@ -13,11 +13,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/items")
-@Validated
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
 
-    private final ItemService itemService;
+    private final ItemService itemService;;
 
     @PostMapping
     @Validated(Marker.OnCreate.class)
