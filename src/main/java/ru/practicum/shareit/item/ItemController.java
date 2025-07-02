@@ -17,7 +17,7 @@ import java.util.List;
 @Validated
 public class ItemController {
 
-    private final ItemService itemService;;
+    private final ItemService itemService;
 
     @PostMapping
     @Validated(Marker.OnCreate.class)
@@ -40,7 +40,7 @@ public class ItemController {
         return itemService.getAllItemDtoByUserId(userId);
     }
 
-    @GetMapping("/Search")
+    @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
         return itemService.searchItems(text);
     }
