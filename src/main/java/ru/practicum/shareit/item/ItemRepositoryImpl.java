@@ -20,29 +20,16 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item create(Item item) {
         item.setId(getNextId());
         items.put(item.getId(), item);
-        log.info("Created new item: {}", item.getId(), item.getName());
+        log.info("Created new item: {}", item.getName());
         return item;
     }
 
     @Override
-    public Item update(Long itemId, Item updateItem, Long userId) {
-        Item oldItem = items.get(itemId);
+    public Item update(Item oldItem) {
 
-        Optional.ofNullable(oldItem).orElseThrow(() ->
-                        new NotFoundException("Item not found id = " + itemId));
-
-        if (!Objects.equals(oldItem.getOwner(), userId)) {
-            throw new NotFoundException("You are not owner of this item");
-        }
-
-        Optional.ofNullable(updateItem.getName()).filter(s -> !s.isBlank())
-                .ifPresent(oldItem::setName);  // проверка на ввод пробела и налл
-        Optional.ofNullable(updateItem.getDescription()).ifPresent(oldItem::setDescription);
-        Optional.ofNullable(updateItem.getAvailable()).ifPresent(oldItem::setAvailable);
-
-        items.put(itemId, oldItem);
-        log.info("Updated new item: id={}, name={}, description={}, available={}",
-                itemId, oldItem.getName(), oldItem.getDescription(), oldItem.getAvailable());
+        items.put(oldItem.getId(), oldItem);
+        log.info("Updated new item: name={}, description={}, available={}",
+                oldItem.getName(), oldItem.getDescription(), oldItem.getAvailable());
         return oldItem;
     }
 

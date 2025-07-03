@@ -40,7 +40,22 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(Long itemId, ItemDto itemDto, Long userId) {
         Item itemFromDto = ItemMapper.toItem(itemDto);
-        Item updatedItem = itemRepository.update(itemId, itemFromDto, userId);
+
+        Item oldItem = itemRepository.getItemById(itemId);
+
+        Optional.ofNullable(oldItem).orElseThrow(() ->
+                new NotFoundException("Item not found id = " + itemId));
+
+        if (!Objects.equals(oldItem.getOwner(), userId)) {
+            throw new NotFoundException("You are not owner of this item");
+        }
+
+        Optional.ofNullable(itemFromDto.getName()).filter(s -> !s.isBlank())
+                .ifPresent(oldItem::setName);  // проверка на ввод пробела и налл
+        Optional.ofNullable(itemFromDto.getDescription()).ifPresent(oldItem::setDescription);
+        Optional.ofNullable(itemFromDto.getAvailable()).ifPresent(oldItem::setAvailable);
+
+        Item updatedItem = itemRepository.update(oldItem);
         log.info("Item updated: " + updatedItem.getId());
         return ItemMapper.toItemDto(updatedItem);
     }
