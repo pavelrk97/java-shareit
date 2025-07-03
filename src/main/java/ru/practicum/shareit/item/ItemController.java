@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utils.Marker;
+import static ru.practicum.shareit.utils.HeaderConstants.USER_ID_HEADER;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,12 +22,12 @@ public class ItemController {
 
     @PostMapping
     @Validated(Marker.OnCreate.class)
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid @RequestBody ItemDto itemDto) {
+    public ItemDto create(@RequestHeader(USER_ID_HEADER) Long userId, @Valid @RequestBody ItemDto itemDto) {
         return itemService.create(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable Long itemId,
+    public ItemDto update(@RequestHeader(USER_ID_HEADER) Long userId, @PathVariable Long itemId,
                           @Valid @RequestBody ItemDto itemDto) {
         return itemService.update(itemId, itemDto, userId);
     }
@@ -37,7 +38,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> getItemsByUserId(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public Collection<ItemDto> getItemsByUserId(@RequestHeader(USER_ID_HEADER) Long userId) {
         return itemService.getAllItemDtoByUserId(userId);
     }
 
