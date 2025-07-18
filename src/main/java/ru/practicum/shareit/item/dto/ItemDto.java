@@ -6,7 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.utils.Marker;
+
+import java.util.List;
 
 
 @Data
@@ -22,5 +26,8 @@ public class ItemDto {
     String description;
     @NotNull(message = "Статус о том, доступна или нет вещь для аренды обязателен", groups = {Marker.OnCreate.class})
     Boolean available;
-    Long request;
+    UserDto owner;
+    BookingDto lastBooking;
+    List<CommentDto> comments;
+    BookingDto nextBooking;
 }
