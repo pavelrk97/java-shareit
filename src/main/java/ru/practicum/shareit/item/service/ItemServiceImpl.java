@@ -1,14 +1,18 @@
 package ru.practicum.shareit.item.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,47 +23,43 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
     @Override
-    public ItemDto create(ItemDto itemDto, Long userId) {
-
-        Optional.ofNullable(userRepository.findUserById(userId)).orElseThrow(() ->
-                new NotFoundException("User not found " + userId));
-
-        Item item = ItemMapper.toItem(itemDto);
-        item.setOwner(userId);
-        Item createdItem = itemRepository.create(item);
-        log.info("Item created: " + createdItem);
-        return ItemMapper.toItemDto(createdItem);
+    public ItemDto create(Long userId, ItemCreateDto itemCreateDto) {
+        User owner = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден."));
+        Item item = ItemMapper.toItemFromCreateDto(itemCreateDto);
+        item.setOwner(owner);
+        return ItemMapper.toItemFromDto(itemRepository.save(item));
     }
 
     @Override
-    public ItemDto update(ItemDto itemDto, Long userId) {
-        Long itemId = itemDto.getId();
+    public ItemDto update(ItemUpdateDto itemUpdateDto, Long userId) {
+        Long itemId = itemUpdateDto.getId();
 
-        Item itemFromDto = ItemMapper.toItem(itemDto);
+        Item existingItem = itemRepository.findById(itemId)
+                .orElseThrow(() -> new NotFoundException("Предмет с ID " + itemId + " не найден."));
 
-        Item oldItem = itemRepository.getItemById(itemId);
-
-        Optional.ofNullable(oldItem).orElseThrow(() ->
-                new NotFoundException("Item not found id = " + itemId));
-
-        if (!Objects.equals(oldItem.getOwner(), userId)) {
-            throw new NotFoundException("You are not owner of this item");
+        if (!Objects.equals(existingItem.getOwner().getId(), userId)) {
+            throw new NotFoundException("У пользователя нет прав на обновление предмета с ID " + itemId);
         }
-
-        Optional.ofNullable(itemFromDto.getName()).filter(s -> !s.isBlank())
-                .ifPresent(oldItem::setName);  // проверка на ввод пробела и налл
-        Optional.ofNullable(itemFromDto.getDescription()).ifPresent(oldItem::setDescription);
-        Optional.ofNullable(itemFromDto.getAvailable()).ifPresent(oldItem::setAvailable);
-
-        Item updatedItem = itemRepository.update(oldItem);
-        log.info("Item updated: " + updatedItem.getId());
-        return ItemMapper.toItemDto(updatedItem);
+        if (itemUpdateDto.getName() != null) {
+            existingItem.setName(itemUpdateDto.getName());
+        }
+        if (itemUpdateDto.getDescription() != null) {
+            existingItem.setDescription(itemUpdateDto.getDescription());
+        }
+        if (itemUpdateDto.getAvailable() != null) {
+            existingItem.setAvailable(itemUpdateDto.getAvailable());
+        }
+        itemRepository.save(existingItem);
+        log.info("Обновлен предмет с ID: {}", itemId);
+        return ItemMapper.toItemFromDto(existingItem);
     }
 
     @Override

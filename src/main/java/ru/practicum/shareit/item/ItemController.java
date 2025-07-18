@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemCreateDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utils.Marker;
 import static ru.practicum.shareit.utils.HeaderConstants.USER_ID_HEADER;
@@ -22,15 +24,15 @@ public class ItemController {
 
     @PostMapping
     @Validated(Marker.OnCreate.class)
-    public ItemDto create(@RequestHeader(USER_ID_HEADER) Long userId, @Valid @RequestBody ItemDto itemDto) {
-        return itemService.create(itemDto, userId);
+    public ItemDto create(@RequestHeader(USER_ID_HEADER) Long userId, @Valid @RequestBody ItemCreateDto itemCreateDto) {
+        return itemService.create(userId, itemCreateDto);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestHeader(USER_ID_HEADER) Long userId, @PathVariable Long itemId,
-                          @Valid @RequestBody ItemDto itemDto) {
-        itemDto.setId(itemId);
-        return itemService.update(itemDto, userId);
+                          @Valid @RequestBody ItemUpdateDto itemUpdateDto) {
+        itemUpdateDto.setId(itemId);
+        return itemService.update(itemUpdateDto, userId);
     }
 
     @GetMapping("/{itemId}")

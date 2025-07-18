@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ItemUpdateDto {
+    Long id;
     String name;
     String description;
     Boolean available;
