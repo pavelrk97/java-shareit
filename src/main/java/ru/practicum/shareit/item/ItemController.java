@@ -4,9 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemCreateDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utils.Marker;
 import static ru.practicum.shareit.utils.HeaderConstants.USER_ID_HEADER;
@@ -36,8 +34,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId) {
-        return itemService.getItemDtoById(itemId);
+    public ItemDto getItemById(@RequestHeader(USER_ID_HEADER) Long userId,
+                               @PathVariable("itemId") Long itemId) {
+        return itemService.getItemDtoById(userId, itemId);
     }
 
     @GetMapping
@@ -46,12 +45,20 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItems(@RequestParam String text) {
-        return itemService.searchItems(text);
+    public List<ItemDto> searchItems(@RequestHeader(USER_ID_HEADER) Long userId, @RequestParam String text) {
+        return itemService.searchItems(userId, text);
     }
 
     @DeleteMapping("/{itemId}")
     public void deleteItem(@PathVariable Long itemId) {
         itemService.deleteItem(itemId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader(USER_ID_HEADER) Long userId,
+                                    @Validated @RequestBody CommentCreateDto commentCreateDto,
+                                    @PathVariable Long itemId) {
+
+        return itemService.createComment(userId, commentCreateDto, itemId);
     }
 }
