@@ -30,6 +30,8 @@ public class BookingController {
     public BookingDto update(@RequestHeader(USER_ID_HEADER) Long userId,
                              @PathVariable("bookingId") Long bookingId,
                              @RequestParam(name = "approved") Boolean approved) {
+        log.info("PATCH запрос на обновление статуса бронирования с id: {} от пользователя с id: {}. " +
+                "Статус approved: {}", bookingId, userId, approved);
         return bookingService.update(userId, bookingId, approved);
     }
 
