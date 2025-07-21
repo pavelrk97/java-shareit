@@ -99,13 +99,13 @@ public class ItemServiceImpl implements ItemService {
         return newItemDto;
     }
 
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Collection<ItemDto> getAllItemDtoByUserId(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден."));
+                .orElseThrow(() -> new NotFoundException(USER_ID + userId + USER_NOT_FOUND));
 
-        List<Item> items = itemRepository.findAllByOwnerWithComments(user);
+        List<Item> items = itemRepository.findByOwner(user);
 
         Map<Long, List<Booking>> bookingsByItemId = bookingRepository.findAllByItemInAndStatusOrderByStartAsc(items, Status.APPROVED)
                 .stream()
