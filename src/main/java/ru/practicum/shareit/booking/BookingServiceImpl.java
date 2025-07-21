@@ -35,8 +35,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         Item item = itemRepository.findById(bookingCreateDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена."));
-        checkIfBookingTimeIsAvailable(item, bookingCreateDto.getStart(), bookingCreateDto.getEnd());
-        bookingValidation(bookingCreateDto, item);
+        validateBookingCreate(item, bookingCreateDto);
         Booking booking = BookingMapper.toBookingFromCreateDto(bookingCreateDto, item, booker);
 
         booking.setItem(item);
@@ -143,4 +142,25 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("Время начала должно быть раньше времени окончания.");
         }
     }
+
+    private void validateBookingCreate(Item item, BookingCreateDto bookingCreateDto) {
+        if (!item.getAvailable()) {
+            throw new IllegalStateException("Вещь недоступна для бронирования.");
+        }
+
+        if (!bookingCreateDto.getStart().isBefore(bookingCreateDto.getEnd())) {
+            throw new IllegalArgumentException("Время начала должно быть раньше времени окончания.");
+        }
+
+        List<Booking> overlappingBookings = bookingRepository.findOverlappingBookings(
+                item.getId(),
+                bookingCreateDto.getStart(),
+                bookingCreateDto.getEnd()
+        );
+
+        if (!overlappingBookings.isEmpty()) {
+            throw new IllegalStateException("Данное время уже занято для бронирования.");
+        }
+    }
+
 }
