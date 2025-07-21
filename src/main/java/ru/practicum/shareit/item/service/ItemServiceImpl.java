@@ -105,20 +105,34 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(USER_ID + userId + USER_NOT_FOUND));
 
-        List<Item> items = itemRepository.findByOwner(user);
+        List<Item> items = itemRepository.findAllByOwnerWithComments(user);
 
-        Map<Long, List<Booking>> bookingsByItemId = bookingRepository.findAllByItemInAndStatusOrderByStartAsc(items, Status.APPROVED)
+        Map<Long, List<Booking>> bookingsByItemId = bookingRepository
+                .findAllByItemInAndStatusOrderByStartAsc(items, Status.APPROVED)
                 .stream()
-                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+                .collect(Collectors.groupingBy(b -> b.getItem().getId()));
 
         return items.stream()
                 .map(item -> {
-                    ItemDto newItemDto = ItemMapper.toItemFromDto(item);
-                    newItemDto.setComments(getItemComments(item.getId()));
-                    return newItemDto;
+                    ItemDto dto = ItemMapper.toItemFromDto(item);
+                    dto.setComments(item.getComments().stream()
+                            .map(CommentMapper::toCommentDto)
+                            .collect(toList()));
+
+                    List<BookingDto> bookingDTOList = bookingsByItemId
+                            .getOrDefault(item.getId(), Collections.emptyList())
+                            .stream()
+                            .map(BookingMapper::toBookingDto)
+                            .collect(toList());
+
+                    dto.setLastBooking(getLastBooking(bookingDTOList, LocalDateTime.now()));
+                    dto.setNextBooking(getNextBooking(bookingDTOList, LocalDateTime.now()));
+
+                    return dto;
                 })
                 .collect(toList());
     }
+
 
 
     @Override

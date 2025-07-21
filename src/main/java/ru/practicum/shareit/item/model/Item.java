@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Data
 @Builder
@@ -27,4 +30,9 @@ public class Item {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     User owner;
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Comment> comments = new ArrayList<>();
 }
