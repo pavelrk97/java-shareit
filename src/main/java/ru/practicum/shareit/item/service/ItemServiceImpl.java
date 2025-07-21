@@ -103,18 +103,26 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public Collection<ItemDto> getAllItemDtoByUserId(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(USER_ID + userId + USER_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден."));
 
         List<Item> items = itemRepository.findByOwner(user);
 
-        Map<Long, List<Booking>> bookingsByItemId = bookingRepository.findAllByItemInAndStatusOrderByStartAsc(items, Status.APPROVED)
-                .stream()
-                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
+        List<Long> itemIds = items.stream()
+                .map(Item::getId)
+                .collect(Collectors.toList());
+
+        List<Comment> allComments = commentRepository.findAllByItemIdIn(itemIds);
+
+        Map<Long, List<CommentDto>> commentsByItemId = allComments.stream()
+                .collect(Collectors.groupingBy(
+                        comment -> comment.getItem().getId(),
+                        Collectors.mapping(CommentMapper::toCommentDto, Collectors.toList())
+                ));
 
         return items.stream()
                 .map(item -> {
                     ItemDto newItemDto = ItemMapper.toItemFromDto(item);
-                    newItemDto.setComments(getItemComments(item.getId()));
+                    newItemDto.setComments(commentsByItemId.getOrDefault(item.getId(), Collections.emptyList()));
                     return newItemDto;
                 })
                 .toList();
