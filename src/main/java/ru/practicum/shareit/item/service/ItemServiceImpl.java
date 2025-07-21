@@ -105,28 +105,21 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден."));
 
-        List<Item> items = itemRepository.findByOwner(user);
+        List<Item> items = itemRepository.findAllByOwnerWithComments(user);
 
-        List<Long> itemIds = items.stream()
-                .map(Item::getId)
-                .collect(Collectors.toList());
-
-        List<Comment> allComments = commentRepository.findAllByItemIdIn(itemIds);
-
-        Map<Long, List<CommentDto>> commentsByItemId = allComments.stream()
-                .collect(Collectors.groupingBy(
-                        comment -> comment.getItem().getId(),
-                        Collectors.mapping(CommentMapper::toCommentDto, Collectors.toList())
-                ));
+        Map<Long, List<Booking>> bookingsByItemId = bookingRepository.findAllByItemInAndStatusOrderByStartAsc(items, Status.APPROVED)
+                .stream()
+                .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
 
         return items.stream()
                 .map(item -> {
                     ItemDto newItemDto = ItemMapper.toItemFromDto(item);
-                    newItemDto.setComments(commentsByItemId.getOrDefault(item.getId(), Collections.emptyList()));
+                    newItemDto.setComments(getItemComments(item.getId()));
                     return newItemDto;
                 })
-                .toList();
+                .collect(toList());
     }
+
 
     @Override
     @Transactional(readOnly = true)
