@@ -4,8 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
+@Slf4j
 public class ErrorHandler {
 
 
@@ -24,7 +26,7 @@ public class ErrorHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGenericException(Exception ex) {
-        // Log the exception for debugging purposes
+        log.error("Необработанная ошибка: ", ex); // ← добавили логирование
         return new ErrorResponse("Произошла непредвиденная ошибка: " + ex.getMessage());
     }
 }
