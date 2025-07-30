@@ -24,4 +24,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "WHERE i.owner = :owner")
     List<Item> findAllByOwnerWithComments(@Param("owner") User owner);
 
+    List<Item> findByRequestId(Long requestId);
 }

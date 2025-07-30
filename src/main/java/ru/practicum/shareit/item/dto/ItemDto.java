@@ -2,10 +2,8 @@ package ru.practicum.shareit.item.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.utils.Marker;
@@ -17,6 +15,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemDto {
 
     Long id;
@@ -30,4 +29,5 @@ public class ItemDto {
     BookingDto lastBooking;
     List<CommentDto> comments;
     BookingDto nextBooking;
+    Long requestId;
 }

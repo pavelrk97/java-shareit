@@ -1,15 +1,20 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.booking.service;
 
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingCreateDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.State;
 import ru.practicum.shareit.booking.dto.Status;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -78,11 +83,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDto> findAll(Long bookerId, String state) {
+    public List<BookingDto> findAll(Long bookerId, String state, Integer from, Integer size) {
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         State bookingState = State.parseState(state);
         LocalDateTime now = LocalDateTime.now();
+
+        int page = from > 0 ? from / size : 0;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("start").descending());
 
         List<Booking> bookings = switch (bookingState) {
             case ALL -> bookingRepository.findByBookerIdOrderByStartDesc(bookerId);
@@ -102,11 +110,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDto> getOwnerBookings(Long ownerId, String state) {
+    public List<BookingDto> getOwnerBookings(Long ownerId, String state, Integer from, Integer size) {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
         State bookingState = State.parseState(state);
         LocalDateTime now = LocalDateTime.now();
+
+        int page = from > 0 ? from / size : 0;
+        Pageable pageable = PageRequest.of(page, size, Sort.by("start").descending());
 
         List<Booking> bookings = switch (bookingState) {
             case ALL -> bookingRepository.findByItemOwnerIdOrderByStartDesc(ownerId);
@@ -162,5 +173,4 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalStateException("Данное время уже занято для бронирования.");
         }
     }
-
 }

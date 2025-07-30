@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.mappers.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -133,8 +133,6 @@ public class ItemServiceImpl implements ItemService {
                 .collect(toList());
     }
 
-
-
     @Override
     @Transactional(readOnly = true)
     public List<ItemDto> searchItems(Long userId, String text) {
@@ -161,8 +159,9 @@ public class ItemServiceImpl implements ItemService {
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
         log.info("Найдено {} комментариев для item ID: {}", comments.size(), itemId);
         return comments.stream()
+                .filter(Objects::nonNull)
                 .map(CommentMapper::toCommentDto)
-                .toList();
+                .collect(toList());
     }
 
     @Override
