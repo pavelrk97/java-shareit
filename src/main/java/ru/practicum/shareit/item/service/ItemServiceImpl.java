@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
@@ -39,6 +42,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private static final String USER_NOT_FOUND = " не найден.";
     private static final String USER_ID = "Пользователь с ID ";
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public ItemDto create(Long userId, ItemCreateDto itemCreateDto) {
@@ -46,6 +50,11 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException(USER_ID + userId + USER_NOT_FOUND));
         Item item = ItemMapper.toItemFromCreateDto(itemCreateDto);
         item.setOwner(owner);
+        if (itemCreateDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(itemCreateDto.getRequestId())
+                    .orElseThrow(() -> new EntityNotFoundException("Запроса на данный предмет не существует"));
+            item.setRequest(itemRequest);
+        }
         return ItemMapper.toItemFromDto(itemRepository.save(item));
     }
 
