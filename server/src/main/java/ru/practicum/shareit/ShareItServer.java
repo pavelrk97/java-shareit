@@ -10,4 +10,5 @@ public class ShareItServer  {
 		SpringApplication.run(ShareItServer.class, args);
 	}
 
+
 }
