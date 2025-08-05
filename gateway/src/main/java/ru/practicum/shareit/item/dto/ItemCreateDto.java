@@ -17,5 +17,6 @@ public class ItemCreateDto {
 
     @NotNull(message = "Статус о том, доступна или нет вещь для аренды обязателен")
     Boolean available;
+
     Long requestId;
 }
