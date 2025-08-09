@@ -54,7 +54,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с ID " + userId + " не найден."));
 
-        List<ItemRequest> itemRequestList = itemRequestRepository.findAllByRequesterId(userId);
+        List<ItemRequest> itemRequestList = itemRequestRepository.findAllByRequesterIdWithItems(userId);
         log.info("Запросы пользователя {}", userId);
         return itemRequestList.stream()
                 .map(itemRequest -> ItemRequestMapper.toItemRequestWithItemDto(itemRequest, Collections.emptyList()))
