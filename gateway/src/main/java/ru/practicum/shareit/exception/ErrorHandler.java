@@ -12,26 +12,20 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ErrorHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(NOT_FOUND)
-    public ErrorResponse handleNotFoundException(NotFoundException ex) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse notFound(NotFoundException ex) {
         return new ErrorResponse("NOT_FOUND", ex.getMessage());
     }
 
     @ExceptionHandler(DuplicatedDataException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDuplicatedDataException(DuplicatedDataException ex) {
+    public ErrorResponse conflict(DuplicatedDataException ex) {
         return new ErrorResponse("CONFLICT", ex.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(BAD_REQUEST)
-    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException ex) {
-        return new ErrorResponse("BAD_REQUEST", ex.getMessage());
-    }
-
-    @ExceptionHandler(IllegalStateException.class)
-    @ResponseStatus(BAD_REQUEST)
-    public ErrorResponse handleIllegalStateException(IllegalStateException ex) {
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse badRequest(RuntimeException ex) {
         return new ErrorResponse("BAD_REQUEST", ex.getMessage());
     }
 }
