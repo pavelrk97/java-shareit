@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.ItemController;
 import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.utils.HeaderConstants;
 
@@ -41,6 +42,7 @@ public class ItemControllerTest {
     private ItemUpdateDto itemUpdateDto;
     private CommentDto commentDto;
     private CommentCreateDto commentCreateDto;
+    private CommentService commentService;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -183,7 +185,7 @@ public class ItemControllerTest {
 
     @Test
     void createCommentTest() throws Exception {
-        when(itemService.createComment(anyLong(), any(CommentCreateDto.class), anyLong())).thenReturn(commentDto);
+        when(commentService.createComment(anyLong(), any(CommentCreateDto.class), anyLong())).thenReturn(commentDto);
 
         mockMvc.perform(post("/items/{itemId}/comment", 1L)
                         .header(HeaderConstants.USER_ID_HEADER, 1L)
@@ -191,7 +193,7 @@ public class ItemControllerTest {
                         .content(objectMapper.writeValueAsString(commentCreateDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(1)));
-        verify(itemService, times(1)).createComment(anyLong(), any(CommentCreateDto.class), anyLong());
+        verify(commentService, times(1)).createComment(anyLong(), any(CommentCreateDto.class), anyLong());
     }
 
     @Test

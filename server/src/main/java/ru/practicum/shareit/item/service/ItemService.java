@@ -17,8 +17,4 @@ public interface ItemService {
     List<ItemDto> searchItems(Long userId, String text);
 
     void deleteItem(Long itemId);
-
-    CommentDto createComment(Long userId, CommentCreateDto commentCreateDto, Long itemId);
-
-    List<CommentDto> getItemComments(Long itemId);
 }

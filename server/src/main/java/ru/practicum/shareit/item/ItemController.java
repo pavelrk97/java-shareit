@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemService;
 import static ru.practicum.shareit.utils.HeaderConstants.USER_ID_HEADER;
 
@@ -18,6 +19,7 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService itemService;
+    private final CommentService commentService;
 
     @PostMapping
     public ItemDto create(@RequestHeader(USER_ID_HEADER) Long userId,
@@ -64,6 +66,6 @@ public class ItemController {
                                     @Validated @RequestBody CommentCreateDto commentCreateDto,
                                     @PathVariable Long itemId) {
         log.info("POST запрос на создание нового комментария: от пользователя c id: {}", userId);
-        return itemService.createComment(userId, commentCreateDto, itemId);
+        return commentService.createComment(userId, commentCreateDto, itemId);
     }
 }
