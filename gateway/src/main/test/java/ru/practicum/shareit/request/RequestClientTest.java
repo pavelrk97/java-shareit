@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +28,7 @@ public class RequestClientTest {
         when(requestClient.create(userId, requestDto)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = requestClient.create(userId, requestDto);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -38,7 +39,7 @@ public class RequestClientTest {
         when(requestClient.findUserRequests(userId)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = requestClient.findUserRequests(userId);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -51,7 +52,7 @@ public class RequestClientTest {
         when(requestClient.findAllRequests(userId, from, size)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = requestClient.findAllRequests(userId, from, size);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -62,6 +63,6 @@ public class RequestClientTest {
         when(requestClient.findRequestById(requestId)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = requestClient.findRequestById(requestId);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 }

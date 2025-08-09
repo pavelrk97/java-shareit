@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,7 +25,7 @@ class UserClientTest {
         when(userClient.create(userDto)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = userClient.create(userDto);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -36,7 +36,7 @@ class UserClientTest {
         when(userClient.findById(userId)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = userClient.findById(userId);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -48,7 +48,7 @@ class UserClientTest {
         when(userClient.update(userId, userDto)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = userClient.update(userId, userDto);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -59,7 +59,7 @@ class UserClientTest {
         when(userClient.deleteById(userId)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = userClient.deleteById(userId);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -69,6 +69,6 @@ class UserClientTest {
         when(userClient.findAll()).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = userClient.findAll();
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.booking.dto.BookItemRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,7 +27,7 @@ public class BookingClientTest {
         when(bookingClient.create(userId, requestDto)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = bookingClient.create(userId, requestDto);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -40,7 +40,7 @@ public class BookingClientTest {
         when(bookingClient.update(userId, bookingId, approved)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = bookingClient.update(userId, bookingId, approved);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class BookingClientTest {
         when(bookingClient.getBookings(userId, state, from, size)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = bookingClient.getBookings(userId, state, from, size);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -68,7 +68,7 @@ public class BookingClientTest {
         when(bookingClient.getAllOwner(ownerId, state, from, size)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = bookingClient.getAllOwner(ownerId, state, from, size);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 
     @Test
@@ -80,6 +80,6 @@ public class BookingClientTest {
         when(bookingClient.getBooking(userId, bookingId)).thenReturn(expectedResponse);
 
         ResponseEntity<Object> actualResponse = bookingClient.getBooking(userId, bookingId);
-        assertEquals(expectedResponse, actualResponse);
+        assertThat(actualResponse).isEqualTo(expectedResponse);
     }
 }
