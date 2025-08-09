@@ -1,12 +1,11 @@
-package shareit.user;
+package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class UserMapperTest {
 
@@ -15,9 +14,9 @@ public class UserMapperTest {
         UserDto userDto = UserDto.builder().id(1L).name("Test").email("test@yandex.ru").build();
         User mappedUser = UserMapper.toUser(userDto);
 
-        assertEquals(mappedUser.getId(), userDto.getId());
-        assertEquals(mappedUser.getName(), userDto.getName());
-        assertEquals(mappedUser.getEmail(), userDto.getEmail());
+        assertThat(mappedUser.getId()).isEqualTo(userDto.getId());
+        assertThat(mappedUser.getName()).isEqualTo(userDto.getName());
+        assertThat(mappedUser.getEmail()).isEqualTo(userDto.getEmail());
     }
 
     @Test
@@ -25,9 +24,9 @@ public class UserMapperTest {
         UserDto userDto = UserDto.builder().id(null).name("").email(null).build();
         User mappedUser = UserMapper.toUser(userDto);
 
-        assertNull(mappedUser.getId());
-        assertEquals("", mappedUser.getName());
-        assertNull(mappedUser.getEmail());
+        assertThat(mappedUser.getId()).isNull();
+        assertThat(mappedUser.getName()).isEqualTo("");
+        assertThat(mappedUser.getEmail()).isNull();
     }
 
     @Test
@@ -36,9 +35,9 @@ public class UserMapperTest {
                 .id(1L).name("Test").email(null).build();
         User mappedUser = UserMapper.toUser(userDto);
 
-        assertEquals(mappedUser.getId(), userDto.getId());
-        assertEquals(mappedUser.getName(), userDto.getName());
-        assertNull(mappedUser.getEmail());
+        assertThat(mappedUser.getId()).isEqualTo(userDto.getId());
+        assertThat(mappedUser.getName()).isEqualTo(userDto.getName());
+        assertThat(mappedUser.getEmail()).isNull();
     }
 
     @Test
@@ -46,9 +45,9 @@ public class UserMapperTest {
         UserDto userDto = UserDto.builder().id(1L).name("Test").email("test@yandex.ru").build();
         User user = UserMapper.toUser(userDto);
 
-        assertEquals(userDto.getId(), user.getId());
-        assertEquals(userDto.getName(), user.getName());
-        assertEquals(userDto.getEmail(), user.getEmail());
+        assertThat(user.getId()).isEqualTo(userDto.getId());
+        assertThat(user.getName()).isEqualTo(userDto.getName());
+        assertThat(user.getEmail()).isEqualTo(userDto.getEmail());
     }
 
     @Test
@@ -56,9 +55,9 @@ public class UserMapperTest {
         UserDto userDto = UserDto.builder().id(null).name(null).email(null).build();
         User user = UserMapper.toUser(userDto);
 
-        assertNull(user.getId());
-        assertNull(user.getName());
-        assertNull(user.getEmail());
+        assertThat(user.getId()).isNull();
+        assertThat(user.getName()).isNull();
+        assertThat(user.getEmail()).isNull();
     }
 
     @Test
@@ -66,6 +65,6 @@ public class UserMapperTest {
         UserDto userDto = UserDto.builder().id(1L).name("").email("test@yandex.ru").build();
         User user = UserMapper.toUser(userDto);
 
-        assertEquals("", user.getName());
+        assertThat(user.getName()).isEqualTo("");
     }
 }

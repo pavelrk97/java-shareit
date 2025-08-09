@@ -1,4 +1,4 @@
-package shareit.user;
+package ru.practicum.shareit.user;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +14,8 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @SpringBootTest
 @Transactional
@@ -41,9 +42,9 @@ public class UserServiceImplIntegrationTest {
     @Test
     void createUser() {
         UserDto createdUser = userService.create(userDto1);
-        assertNotNull(createdUser.getId());
-        assertEquals(userDto1.getName(), createdUser.getName());
-        assertEquals(userDto1.getEmail(), createdUser.getEmail());
+        assertThat(createdUser.getId()).isNotNull();
+        assertThat(createdUser.getName()).isEqualTo(userDto1.getName());
+        assertThat(createdUser.getEmail()).isEqualTo(userDto1.getEmail());
     }
 
     @Test
@@ -52,8 +53,8 @@ public class UserServiceImplIntegrationTest {
         UserDto userUpdateDto = new UserDto(null, "UpdatedName", "updated@yandex.ru");
         UserDto updatedUser = userService.update(createdUser.getId(), userUpdateDto);
 
-        assertEquals("UpdatedName", updatedUser.getName());
-        assertEquals("updated@yandex.ru", updatedUser.getEmail());
+        assertThat(updatedUser.getName()).isEqualTo("UpdatedName");
+        assertThat(updatedUser.getEmail()).isEqualTo("updated@yandex.ru");
     }
 
     @Test
@@ -61,28 +62,34 @@ public class UserServiceImplIntegrationTest {
         userService.create(userDto1);
         userService.create(userDto2);
         UserDto userUpdateDto = new UserDto(null, "UpdatedName", "test.@yandex.ru");
-        assertThrows(DuplicatedDataException.class, () -> userService.update(userDto2.getId(), userUpdateDto));
+
+        assertThatThrownBy(() -> userService.update(userDto2.getId(), userUpdateDto))
+                .isInstanceOf(DuplicatedDataException.class);
     }
 
     @Test
     void findUserByIdReturnUser() {
         UserDto createdUser = userService.create(userDto1);
         UserDto foundUser = userService.findUserById(createdUser.getId());
-        assertEquals(createdUser.getId(), foundUser.getId());
-        assertEquals(createdUser.getName(), foundUser.getName());
-        assertEquals(createdUser.getEmail(), foundUser.getEmail());
+
+        assertThat(foundUser.getId()).isEqualTo(createdUser.getId());
+        assertThat(foundUser.getName()).isEqualTo(createdUser.getName());
+        assertThat(foundUser.getEmail()).isEqualTo(createdUser.getEmail());
     }
 
     @Test
     void findUserByIdWhenUserNotFound() {
-        assertThrows(NotFoundException.class, () -> userService.findUserById(999L));
+        assertThatThrownBy(() -> userService.findUserById(999L))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
     void deleteUser() {
         UserDto createdUser = userService.create(userDto1);
         userService.delete(createdUser.getId());
-        assertThrows(NotFoundException.class, () -> userService.findUserById(createdUser.getId()));
+
+        assertThatThrownBy(() -> userService.findUserById(createdUser.getId()))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
@@ -90,6 +97,7 @@ public class UserServiceImplIntegrationTest {
         userService.create(userDto1);
         userService.create(userDto2);
         List<UserDto> users = userService.findAll();
-        assertEquals(2, users.size());
+
+        assertThat(users).hasSize(2);
     }
 }

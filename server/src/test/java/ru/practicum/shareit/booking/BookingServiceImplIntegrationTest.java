@@ -1,4 +1,4 @@
-package shareit.booking;
+package ru.practicum.shareit.booking;
 
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package shareit.item;
+package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +14,7 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.CommentService;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
@@ -50,6 +51,7 @@ class ItemServiceImplTest {
     private Item item;
     private ItemCreateDto itemCreateDto;
     private ItemUpdateDto itemUpdateDto;
+    private CommentService commentService;
 
     @BeforeEach
     void setUp() {
@@ -208,7 +210,7 @@ class ItemServiceImplTest {
         when(bookingRepository.findAllByUserBookings(anyLong(), anyLong(), any(LocalDateTime.class))).thenReturn(Collections.singletonList(booking));
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
-        CommentDto result = itemService.createComment(1L, commentCreateDto, 1L);
+        CommentDto result = commentService.createComment(1L, commentCreateDto, 1L);
 
         assertNotNull(result);
         assertEquals(commentCreateDto.getText(), result.getText());

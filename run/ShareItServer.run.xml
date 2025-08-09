@@ -4,7 +4,7 @@
     <module name="server" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="ru.practicum.shareit.ShareItTests" />
+        <option name="PATTERN" value="ru.practicum.ru.practicum.shareit.ShareItTests" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

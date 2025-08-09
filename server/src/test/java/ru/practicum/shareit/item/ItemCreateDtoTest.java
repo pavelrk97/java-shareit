@@ -1,4 +1,4 @@
-package shareit.item;
+package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;

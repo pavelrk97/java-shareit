@@ -1,4 +1,4 @@
-package shareit.user;
+package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +9,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 class UserDtoTest {
@@ -77,7 +75,7 @@ class UserDtoTest {
         UserDto userDto = UserDto.builder().id(3L).name("").email(null).build();
         JsonContent<UserDto> userDtoSaved = jacksonTester.write(userDto);
         assertThat(userDtoSaved).extractingJsonPathStringValue("$.name").isEqualTo("");
-        assertThat(userDtoSaved).extractingJsonPathStringValue("$.email").isNull();
+        assertThat(userDtoSaved).extractingJsonPathValue("$.email").isNull();
     }
 
     @Test
@@ -109,9 +107,9 @@ class UserDtoTest {
 
         UserDto deserializedUserDto = jacksonTester.parseObject(json);
 
-        assertNull(deserializedUserDto.getId());
-        assertNull(deserializedUserDto.getName());
-        assertNull(deserializedUserDto.getEmail());
+        assertThat(deserializedUserDto.getId()).isNull();
+        assertThat(deserializedUserDto.getName()).isNull();
+        assertThat(deserializedUserDto.getEmail()).isNull();
     }
 
     @Test
@@ -120,8 +118,8 @@ class UserDtoTest {
 
         UserDto deserializedUserDto = jacksonTester.parseObject(json);
 
-        assertEquals(1L, deserializedUserDto.getId());
-        assertEquals("Test", deserializedUserDto.getName());
-        assertEquals("invalid-email", deserializedUserDto.getEmail());
+        assertThat(deserializedUserDto.getId()).isEqualTo(1L);
+        assertThat(deserializedUserDto.getName()).isEqualTo("Test");
+        assertThat(deserializedUserDto.getEmail()).isEqualTo("invalid-email");
     }
 }
